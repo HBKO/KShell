@@ -87,6 +87,19 @@ void Execve(char *string,char **argv,char ** environ)
     }   
 }
 
+/* execvp with error */
+/* execvp 可以在环境变量中直接寻找是否存在命令，对于ls这一类命令可以不用路径识别 */
+/* execvp并且可以不用添加环境变量，因为环境变量暂时不会改变，所以不传 */
+void Execvp(char *string,char **argv)
+{
+    if(execvp(argv[0],argv)<0)
+    {
+        printf("%s: Command not found.\n",argv[0]);
+        exit(0);
+    }
+}
+
+
 
 /*
  * unix_error - unix-style error routine

@@ -180,7 +180,8 @@ void eval(char *cmdline)
             {
                 unix_error("eval: setpgid failed.\n");
             }
-            Execve(argv[0],argv,environ);    //孩子进程自己执行他的应用程序
+//            Execve(argv[0],argv,environ);    //孩子进程自己执行他的应用程序
+              Execvp(argv[0],argv);         //孩子进程自己执行他的应用程序，并且用execvp执行
         }
 
 

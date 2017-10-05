@@ -26,6 +26,9 @@ void Sigprocmask(int how, const sigset_t * set, sigset_t * oldset);
 /* execve with error */
 void Execve(char *string,char **argv,char ** environ);
 
+/* execvp with error */
+void Execvp(char *string,char **argv);
+
 /*
  * unix_error - unix-style error routine
  */
