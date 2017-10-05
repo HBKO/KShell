@@ -15,8 +15,8 @@ FILES =  ./myspin ./mysplit ./mystop ./myint
 
 all: tsh $(FILES)
 
-tsh: tsh.c funwitherr.c funwitherr.h jobs.c jobs.h 
-	$(CC) $(CFLAGS)  -o tsh tsh.c funwitherr.c jobs.c
+tsh: tsh.c funwitherr.c funwitherr.h jobs.c jobs.h mystring.c mystring.h
+	$(CC) $(CFLAGS)  -o tsh tsh.c funwitherr.c jobs.c mystring.c
 
 addition: myspin.c mysplit.c mystop.c myint.c
 	$(CC) $(CFLAGS) -o myspin myspin.c

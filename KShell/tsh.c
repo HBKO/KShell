@@ -15,6 +15,7 @@
 #include <errno.h>
 #include "funwitherr.h"
 #include "jobs.h"
+#include "mystring.h"
 
 
 
@@ -74,6 +75,9 @@ int main(int argc, char **argv)
      * on the pipe connected to stdout) */
     dup2(1, 2);
 
+    
+
+
     /* Parse the command line */
     while ((c = getopt(argc, argv, "hvp")) != EOF) {
         switch (c) {
@@ -91,6 +95,8 @@ int main(int argc, char **argv)
 	}
     }
 
+
+
     /* Install the signal handlers */
 
     /* These are the ones you will need to implement */
@@ -104,12 +110,17 @@ int main(int argc, char **argv)
     /* Initialize the job list */
     initjobs(jobs);
 
+    //获取正常命令行的信息
+    
+
+
     /* Execute the shell's read/eval loop */
     while (1) {
 
 	/* Read command line */
 	if (emit_prompt) {
-	    printf("%s", prompt);
+//	    printf("%s", prompt);
+        printname();
 	    fflush(stdout);
 	}
 	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
@@ -180,7 +191,6 @@ void eval(char *cmdline)
             {
                 unix_error("eval: setpgid failed.\n");
             }
-//            Execve(argv[0],argv,environ);    //孩子进程自己执行他的应用程序
               Execvp(argv[0],argv);         //孩子进程自己执行他的应用程序，并且用execvp执行
         }
 
@@ -297,17 +307,6 @@ int builtin_cmd(char **argv)
 }
 
 
-/*从字符串的右边截取n个字符*/  
-char * right(char *dst,char *src, int n)  
-{  
-    char *p = src;  
-    char *q = dst;  
-    int len = strlen(src);  
-    if(n>len) n = len;  
-    p += (len-n);   /*从右边第n个字符开始，到0结束，很巧啊*/  
-    while((*(q++) = *(p++))); 
-    return dst;  
-}  
 
 
 //用于获取pid,jid的数字
