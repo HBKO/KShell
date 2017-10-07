@@ -16,7 +16,7 @@ FILES =  ./myspin ./mysplit ./mystop ./myint
 all: tsh $(FILES)
 
 tsh: tsh.c funwitherr.c funwitherr.h jobs.c jobs.h mystring.c mystring.h
-	$(CC) $(CFLAGS)  -o tsh tsh.c funwitherr.c jobs.c mystring.c
+	$(CC) $(CFLAGS)  -o tsh tsh.c funwitherr.c jobs.c mystring.c /usr/lib64/libreadline.so
 
 addition: myspin.c mysplit.c mystop.c myint.c
 	$(CC) $(CFLAGS) -o myspin myspin.c
@@ -24,6 +24,9 @@ addition: myspin.c mysplit.c mystop.c myint.c
 	$(CC) $(CFLAGS) -o mystop mystop.c
 	$(CC) $(CFLAGS) -o myint myint.c 
 
+
+path: path.c mystring.c mystring.h
+	$(CC) $(CFLAGS) -o path path.c mystring.c /usr/lib64/libreadline.so
 
 
 ##################
@@ -51,11 +54,11 @@ test05:
 test06:
 	$(DRIVER) -t ./test/trace06.txt -s $(TSH) -a $(TSHARGS)
 test07:
-	$(DRIVER) -t .test/trace07.txt -s $(TSH) -a $(TSHARGS)
+	$(DRIVER) -t ./test/trace07.txt -s $(TSH) -a $(TSHARGS)
 test08:
-	$(DRIVER) -t .test/trace08.txt -s $(TSH) -a $(TSHARGS)
+	$(DRIVER) -t ./test/trace08.txt -s $(TSH) -a $(TSHARGS)
 test09:
-	$(DRIVER) -t .test/trace09.txt -s $(TSH) -a $(TSHARGS)
+	$(DRIVER) -t ./test/trace09.txt -s $(TSH) -a $(TSHARGS)
 test10:
 	$(DRIVER) -t ./test/trace10.txt -s $(TSH) -a $(TSHARGS)
 test11:

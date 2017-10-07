@@ -5,6 +5,8 @@
 #include<string.h>
 #include<unistd.h>
 #include<stdlib.h>
+#include <readline/readline.h>  
+#include <readline/history.h>
 #include "mystring.h"
 
 /*从字符串的右边截取n个字符*/  
@@ -32,25 +34,32 @@ struct hostmessage *getmessage()
     new->isroot=(geteuid()==getuid());
     struct passwd *my_info;
     my_info=getpwuid(getuid());
+    memset(new->usrname,0,MAXNAME);
     memcpy(new->usrname,my_info->pw_name,strlen(my_info->pw_name)*sizeof(char));
     return new;
 }
 
 
 /* 获取shell命令字符串 */
-void printname()
+void getallname(char* name)
 {
     //函数声明
     void shellcwd(char *cwd,char *dst);
     void shellhostname(char *res,char *dst);
-    char *isroot="$";
+    char isroot='$';
     struct hostmessage* result=getmessage();
     char *cwd=malloc(sizeof(MAXNAME));
     char *hostname=malloc(sizeof(MAXNAME));
+    char res[100];
+    //对每次传入的数组进行清空
+    if(name)
+        memset(name,0,MAXNAME);
     shellcwd(result->cwd,cwd);
     shellhostname(result->hostname,hostname);
-    if(result->isroot!=1) isroot="#";
-    printf("[hekewen][%s@%s %s]%s",result->usrname,hostname,cwd,isroot);
+    if(result->isroot!=1) isroot='#';
+    sprintf(res,"[KShell][%s@%s %s]%c",result->usrname,hostname,cwd,isroot);
+    fflush(stdout);
+    memcpy(name,res,strlen(res)*sizeof(char));
     freemessage(result);
     free(cwd);
     free(hostname);
@@ -97,6 +106,33 @@ int freemessage(struct hostmessage *oldmessage)
 }
 
 
+//初始化readline
+void init_rl()
+{
+    rl_bind_key('\t', rl_complete);
+}
 
+
+char *rl_gets(const char* prompt)
+{
+    static char *line_read=(char *)NULL;
+  /* If the buffer has already been allocated,
+     return the memory to the free pool. */
+  if (line_read)
+    {
+      free (line_read);
+      line_read = (char *)NULL;
+    }
+
+  /* Get a line from the user. */
+  line_read = readline(prompt);
+
+  /* If the line has any text in it,
+     save it on the history. */
+  if (line_read && *line_read)
+    add_history (line_read);
+
+  return (line_read);
+}
 
 

@@ -106,7 +106,7 @@ void Execvp(char *string,char **argv)
  */
 void unix_error(char *msg)
 {
-    fprintf(stdout, "%s: %s\n", msg, strerror(errno));
+    fprintf(stdout, "%s: %s . and error number is %d \n", msg, strerror(errno),errno);
     exit(1);
 }
 

@@ -27,9 +27,10 @@
 
 /* Global variables */
 extern char **environ;      /* defined in libc */
-char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
+//char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
 //extern int verbose;            /* if true, print additional output */
 char sbuf[MAXLINE];         /* for composing sprintf messages */
+
 
 
 
@@ -67,10 +68,13 @@ handler_t *Signal(int signum, handler_t *handler);
  */
 int main(int argc, char **argv) 
 {
+    init_rl();
     char c;
-    char cmdline[MAXLINE];
     int emit_prompt = 1; /* emit prompt (default) */
-
+    char* prompt=malloc(MAXNAME);  /* 打印新的内存长度 */
+    /* A static variable for holding the line */
+    char* cmdline=(char *)NULL; // 存储命令行内容
+//    char cmdline[MAXLINE];
     /* Redirect stderr to stdout (so that driver will get all output
      * on the pipe connected to stdout) */
     dup2(1, 2);
@@ -110,8 +114,9 @@ int main(int argc, char **argv)
     /* Initialize the job list */
     initjobs(jobs);
 
-    //获取正常命令行的信息
-    
+
+
+
 
 
     /* Execute the shell's read/eval loop */
@@ -119,23 +124,35 @@ int main(int argc, char **argv)
 
 	/* Read command line */
 	if (emit_prompt) {
-//	    printf("%s", prompt);
-        printname();
+        getallname(prompt);    
+//        printf("%s",prompt);
 	    fflush(stdout);
 	}
+/*
 	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
 	    app_error("fgets error");
-	if (feof(stdin)) { /* End of file (ctrl-d) */
+	if (feof(stdin)) {  // End of file (ctrl-d) 
 	    fflush(stdout);
 	    exit(0);
 	}
+*/
+
+
+    cmdline=rl_gets(prompt);
+    if(feof(stdin))
+    {
+        //End of file (ctrl-d)
+        fflush(stdout);
+        exit(0);
+    }
+    //利用readline读取函数
 
 	/* Evaluate the command line */
 	eval(cmdline);
 	fflush(stdout);
 	fflush(stdout);
     } 
-
+    free(prompt);
     exit(0); /* control never reaches here */
 }
   
@@ -165,7 +182,7 @@ void eval(char *cmdline)
     strcpy(buf,cmdline);   
     bg=parseline(cmdline,argv);
     //跳过空白指令
-    if(argv[0]==NULL)
+    if(bg==3)
     {
         return;
     }
@@ -211,7 +228,7 @@ void eval(char *cmdline)
             }
             else
             {
-                printf("[%d] (%d) %s",pid2jid(pid),pid,cmdline);
+                printf("[%d] (%d) %s\n",pid2jid(pid),pid,cmdline);
             }
         }
     }
@@ -235,7 +252,8 @@ int parseline(const char *cmdline, char **argv)
     int bg;                     /* background job? */
 
     strcpy(buf, cmdline);
-    buf[strlen(buf)-1] = ' ';  /* replace trailing '\n' with space */
+   buf[strlen(buf)] = ' ';  /* replace trailing '\n' with space */
+//    buf[strlen(buf)-1]=' ';
     while (*buf && (*buf == ' ')) /* ignore leading spaces */
 	buf++;
 
@@ -267,7 +285,7 @@ int parseline(const char *cmdline, char **argv)
     argv[argc] = NULL;
     
     if (argc == 0)  /* ignore blank line */
-	return 1;
+	return 3;
 
     /* should the job run in the background? */
     if ((bg = (*argv[argc-1] == '&')) != 0) {
@@ -444,7 +462,8 @@ void sigchld_handler(int sig)
             deletejob(jobs,pid);      /* Delete the child from the job list */
         }
     }
-    if(errno!=ECHILD)
+    
+    if(errno!=ECHILD && errno!=0 && errno!=84 && errno!=25)
       unix_error("waitpid error");
     return;
 }

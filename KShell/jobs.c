@@ -152,7 +152,7 @@ void listjobs(struct job_t *jobs)
 		    printf("listjobs: Internal error: job[%d].state=%d ", 
 			   i, jobs[i].state);
 	    }
-	    printf("%s", jobs[i].cmdline);
+	    printf("%s\n", jobs[i].cmdline);
 	}
     }
 }
